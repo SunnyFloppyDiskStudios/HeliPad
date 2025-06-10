@@ -18,6 +18,8 @@ struct ContentView: View {
     @StateObject private var fetcher = AppFetcher()
     @State private var searchText = ""
     @FocusState private var isSearchFocused: Bool
+    
+    var appFocusObserver: AppFocusObserver = AppFocusObserver()
 
     let columns = [GridItem(.adaptive(minimum: 80))]
 
@@ -32,6 +34,11 @@ struct ContentView: View {
                 .padding()
             }
             .padding()
+        }
+        .onAppear {
+            appFocusObserver.dismissHandler = {
+                dismissWindow(id: "content")
+            }
         }
         .toolbar {
             Spacer()

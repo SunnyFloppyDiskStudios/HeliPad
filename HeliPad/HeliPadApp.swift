@@ -14,21 +14,23 @@ struct HeliPadApp: App {
     var body: some Scene {
         WindowGroup(id: "content") {
             ContentView()
-                .frame(minWidth: 960, minHeight: 640)
-                .windowMinimizeBehavior(.disabled)
-                .windowFullScreenBehavior(.disabled)
-                .windowResizeBehavior(.disabled)
-                .background {
-                    if window == nil {
-                        Color.clear.onReceive(NotificationCenter.default.publisher(for:
-                            NSWindow.didBecomeKeyNotification)) { notification in
-                            if let window = notification.object as? NSWindow {
-                                window.standardWindowButton(.miniaturizeButton)?.isHidden = true
-                                window.standardWindowButton(.zoomButton)?.isHidden = true
-                            }
+            .frame(minWidth: 960, minHeight: 640)
+            .windowMinimizeBehavior(.disabled)
+            .windowFullScreenBehavior(.disabled)
+            .windowResizeBehavior(.disabled)
+            .containerBackground(.thinMaterial, for: .window)
+            .background {
+                if window == nil {
+                    Color.clear.onReceive(NotificationCenter.default.publisher(for:
+                        NSWindow.didBecomeKeyNotification)) { notification in
+                        if let window = notification.object as? NSWindow {
+                            window.standardWindowButton(.miniaturizeButton)?.isHidden = true
+                            window.standardWindowButton(.zoomButton)?.isHidden = true
+                            window.standardWindowButton(.closeButton)?.isHidden = true
                         }
                     }
                 }
+            }
         }
         .windowStyle(.hiddenTitleBar)
         .windowLevel(.floating)
@@ -38,5 +40,6 @@ struct HeliPadApp: App {
                 .frame(minWidth: 320, minHeight: 500)
         }
         .windowStyle(.hiddenTitleBar)
+        .windowLevel(.floating)
     }
 }
