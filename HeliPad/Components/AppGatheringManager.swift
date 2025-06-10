@@ -25,7 +25,7 @@ class AppFetcher: ObservableObject {
     }
 
     func fetchApps() {
-        let paths = ["/Applications", "\(NSHomeDirectory())/Applications"]
+        let paths = ["/Applications", "\(NSHomeDirectory())/Applications", "/System/Applications"]
         var allApps: [AppInfo] = []
 
         for path in paths {
