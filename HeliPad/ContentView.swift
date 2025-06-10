@@ -26,26 +26,7 @@ struct ContentView: View {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 20) {
                     ForEach(filteredApps) { app in
-                        Button {
-                            Task {
-                                NSWorkspace.shared.open(app.url)
-                            }
-                            dismissWindow(id: "content")
-                        } label: {
-                            VStack {
-                                if let icon = app.icon {
-                                    Image(nsImage: icon)
-                                        .resizable()
-                                        .frame(width: 64, height: 64)
-                                }
-                                Text(app.name)
-                                    .font(.caption)
-                                    .lineLimit(1)
-                                    .multilineTextAlignment(.center)
-                            }
-                            .frame(width: 80)
-                        }
-                        .buttonStyle(PlainButtonStyle())
+                        AppLauncherButton(app: app)
                     }
                 }
             }
@@ -77,5 +58,44 @@ struct ContentView: View {
         } else {
             return fetcher.apps.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
         }
+    }
+}
+
+struct AppLauncherButton: View {
+    let app: AppInfo
+    @State private var isHovering = false
+    
+    @Environment(\.dismissWindow) var dismissWindow
+
+    var body: some View {
+        Button {
+            if NSEvent.modifierFlags.contains(.command) {
+                NSWorkspace.shared.activateFileViewerSelecting([app.url])
+            } else {
+                Task {
+                    NSWorkspace.shared.open(app.url)
+                }
+                dismissWindow(id: "content")
+            }
+        } label: {
+            VStack {
+                if let icon = app.icon {
+                    Image(nsImage: icon)
+                        .resizable()
+                        .frame(width: 64, height: 64)
+                }
+                Text(app.name)
+                    .font(.caption)
+                    .lineLimit(1)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(width: 80)
+            .scaleEffect(isHovering ? 1.3 : 1.0)
+            .animation(.interpolatingSpring(stiffness: 300, damping: 15), value: isHovering)
+            .onHover { hovering in
+                isHovering = hovering
+            }
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
