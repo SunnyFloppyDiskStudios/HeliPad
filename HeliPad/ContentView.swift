@@ -29,6 +29,7 @@ struct ContentView: View {
                         AppLauncherButton(app: app)
                     }
                 }
+                .padding()
             }
             .padding()
         }
