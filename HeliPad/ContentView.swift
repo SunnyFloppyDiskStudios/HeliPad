@@ -16,6 +16,13 @@ struct ContentView: View {
             Text("Hello, world!")
         }
         .padding()
+        .toolbar {
+            Button {
+                // search
+            } label: {
+                Image(systemName: "magnifyingglass")
+            }
+        }
     }
 }
 
