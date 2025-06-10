@@ -5,6 +5,11 @@
 //  Created by SunnyFlops on 10/06/2025.
 //
 
+//  Applications Directories:
+//  /Applications
+//  ~/Applications
+//  /System/Applications
+
 import Foundation
 import SwiftUI
 import Combine
@@ -31,12 +36,18 @@ class AppFetcher: ObservableObject {
         for path in paths {
             let rootURL = URL(fileURLWithPath: path, isDirectory: true)
 
-            if let enumerator = FileManager.default.enumerator(at: rootURL, includingPropertiesForKeys: [.isDirectoryKey], options: [.skipsHiddenFiles, .skipsPackageDescendants]) {
+            if let enumerator = FileManager.default.enumerator(
+                at: rootURL,
+                includingPropertiesForKeys: [.isDirectoryKey],
+                options: [.skipsHiddenFiles]
+            ) {
                 for case let url as URL in enumerator {
                     guard url.pathExtension == "app" else { continue }
 
-                    if let bundle = Bundle(url: url),
-                       let name = bundle.infoDictionary?["CFBundleName"] as? String ?? bundle.infoDictionary?["CFBundleDisplayName"] as? String {
+                    if let bundle = Bundle(url: url) {
+                        let name = (bundle.infoDictionary?["CFBundleName"] as? String ??
+                                    bundle.infoDictionary?["CFBundleDisplayName"] as? String) ??
+                                    url.deletingPathExtension().lastPathComponent
 
                         let icon = NSWorkspace.shared.icon(forFile: url.path)
                         icon.size = NSSize(width: 64, height: 64)

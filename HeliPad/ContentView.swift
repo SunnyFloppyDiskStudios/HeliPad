@@ -5,10 +5,6 @@
 //  Created by SunnyFlops on 10/06/2025.
 //
 
-//  Applications Directories:
-//  /Applications
-//  ~/Applications
-
 import SwiftUI
 
 struct ContentView: View {
@@ -18,6 +14,9 @@ struct ContentView: View {
     @StateObject private var fetcher = AppFetcher()
     @State private var searchText = ""
     @FocusState private var isSearchFocused: Bool
+    
+    @State private var hoverSync: Bool = false
+    @State private var hoverSettings: Bool = false
     
     var appFocusObserver: AppFocusObserver = AppFocusObserver()
 
@@ -53,6 +52,16 @@ struct ContentView: View {
             }
 
             Spacer()
+            
+            Button {
+                // refresh
+            } label: {
+                Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
+            }
+            .onHover { hover in
+                hoverSync.toggle()
+            }
+            .symbolEffect(.rotate, value: hoverSync)
 
             Button {
                 openWindow(id: "settings")
