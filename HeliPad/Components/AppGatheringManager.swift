@@ -44,7 +44,7 @@ class AppFetcher: ObservableObject {
                         allApps.append(AppInfo(name: name, icon: icon, url: url))
                     }
 
-                    enumerator.skipDescendants() // prevent descending into .app packages
+                    enumerator.skipDescendants()
                 }
             }
         }

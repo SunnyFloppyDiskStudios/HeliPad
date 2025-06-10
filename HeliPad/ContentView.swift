@@ -34,6 +34,8 @@ struct ContentView: View {
             .padding()
         }
         .toolbar {
+            Spacer()
+            
             HStack {
                 Image(systemName: "magnifyingglass")
                     .padding(.leading)
@@ -107,7 +109,7 @@ struct AppLauncherButton: View {
                     .multilineTextAlignment(.center)
             }
             .frame(width: 80)
-            .scaleEffect(isHovering ? 1.3 : 1.0)
+            .scaleEffect(isHovering ? 1.15 : 1.0)
             .animation(.interpolatingSpring(stiffness: 300, damping: 15), value: isHovering)
             .onHover { hovering in
                 isHovering = hovering
