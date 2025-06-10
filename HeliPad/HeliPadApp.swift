@@ -12,8 +12,14 @@ struct HeliPadApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .frame(minWidth: 960, minHeight: 640)
         }
-        .defaultSize(width: 960, height: 640)
+        .windowStyle(.hiddenTitleBar)
+        
+        WindowGroup(id: "settings") {
+            SettingsView()
+                .frame(minWidth: 320, minHeight: 500)
+        }
         .windowStyle(.hiddenTitleBar)
     }
 }
