@@ -13,6 +13,8 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.openWindow) var openWindow
+    @Environment(\.dismissWindow) var dismissWindow
+    
     @StateObject private var fetcher = AppFetcher()
     @State private var searchText = ""
     @FocusState private var isSearchFocused: Bool
@@ -24,16 +26,26 @@ struct ContentView: View {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 20) {
                     ForEach(filteredApps) { app in
-                        VStack {
-                            if let icon = app.icon {
-                                Image(nsImage: icon)
-                                    .resizable()
-                                    .frame(width: 64, height: 64)
+                        Button {
+                            Task {
+                                NSWorkspace.shared.open(app.url)
                             }
-                            Text(app.name)
-                                .font(.caption)
-                                .lineLimit(1)
+                            dismissWindow(id: "content")
+                        } label: {
+                            VStack {
+                                if let icon = app.icon {
+                                    Image(nsImage: icon)
+                                        .resizable()
+                                        .frame(width: 64, height: 64)
+                                }
+                                Text(app.name)
+                                    .font(.caption)
+                                    .lineLimit(1)
+                                    .multilineTextAlignment(.center)
+                            }
+                            .frame(width: 80)
                         }
+                        .buttonStyle(PlainButtonStyle())
                     }
                 }
             }

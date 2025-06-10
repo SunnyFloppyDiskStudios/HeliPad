@@ -10,7 +10,7 @@ import SwiftUI
 @main
 struct HeliPadApp: App {
     var body: some Scene {
-        WindowGroup {
+        WindowGroup(id: "content") {
             ContentView()
                 .frame(minWidth: 960, minHeight: 640)
         }
