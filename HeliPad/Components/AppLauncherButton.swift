@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct AppLauncherButton: View {
     let app: AppInfo
