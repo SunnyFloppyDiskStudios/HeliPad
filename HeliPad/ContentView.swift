@@ -28,17 +28,14 @@ struct ContentView: View {
     var body: some View {
         VStack {
             ScrollView {
-                LazyVGrid(columns: columns, spacing: 20) {
-                    ForEach(filteredApps) { app in
-                        AppLauncherButton(app: app, draggedItem: $draggedItem)
-                            .environmentObject(fetcher)
-                            .onDrag {
-                                draggedItem = app
-                                return NSItemProvider(object: app.name as NSString)
-                            }
-                    }
+              LazyVGrid(columns: columns, spacing: 20) {
+                ForEach(filteredApps) { app in
+                  AppLauncherButton(app: app, draggedItem: $draggedItem)
+                    .environmentObject(fetcher)
                 }
-                .padding()
+              }
+              .padding()
+              .animation(.interpolatingSpring(stiffness: 200, damping: 20), value: fetcher.apps)
             }
             .padding()
         }
@@ -141,12 +138,9 @@ struct AppLauncherButton: View {
             self.draggedItem = app
             return NSItemProvider(object: app.identifier as NSString)
         }
-        .onDrop(of: [.text], delegate: {
-            if let dragged = draggedItem {
-                AppDropDelegate(item: app, fetcher: fetcher, draggedItem: dragged)
-            } else {
-                EmptyDropDelegate()
-            }
-        }())
+        .onDrop(of: [.text],
+                delegate: AppDropDelegate(item: app,
+                                          fetcher: fetcher,
+                                          draggedItem: $draggedItem))
     }
 }
