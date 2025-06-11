@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct ContentView: View {
     @Environment(\.openWindow) var openWindow
@@ -18,6 +19,8 @@ struct ContentView: View {
     @State private var hoverSync: Bool = false
     @State private var hoverSettings: Bool = false
     
+    @State private var draggedItem: AppInfo? = nil
+    
     var appFocusObserver: AppFocusObserver = AppFocusObserver()
 
     let columns = [GridItem(.adaptive(minimum: 80))]
@@ -27,7 +30,12 @@ struct ContentView: View {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 20) {
                     ForEach(filteredApps) { app in
-                        AppLauncherButton(app: app)
+                        AppLauncherButton(app: app, draggedItem: $draggedItem)
+                            .environmentObject(fetcher)
+                            .onDrag {
+                                draggedItem = app
+                                return NSItemProvider(object: app.name as NSString)
+                            }
                     }
                 }
                 .padding()
@@ -99,18 +107,15 @@ struct ContentView: View {
 struct AppLauncherButton: View {
     let app: AppInfo
     @State private var isHovering = false
-    
-    @Environment(\.dismissWindow) var dismissWindow
+    @Binding var draggedItem: AppInfo?
+    @EnvironmentObject var fetcher: AppFetcher
 
     var body: some View {
         Button {
             if NSEvent.modifierFlags.contains(.command) {
                 NSWorkspace.shared.activateFileViewerSelecting([app.url])
             } else {
-                Task {
-                    NSWorkspace.shared.open(app.url)
-                }
-                dismissWindow(id: "content")
+                NSWorkspace.shared.open(app.url)
             }
         } label: {
             VStack {
@@ -132,5 +137,16 @@ struct AppLauncherButton: View {
             }
         }
         .buttonStyle(PlainButtonStyle())
+        .onDrag {
+            self.draggedItem = app
+            return NSItemProvider(object: app.identifier as NSString)
+        }
+        .onDrop(of: [.text], delegate: {
+            if let dragged = draggedItem {
+                AppDropDelegate(item: app, fetcher: fetcher, draggedItem: dragged)
+            } else {
+                EmptyDropDelegate()
+            }
+        }())
     }
 }
