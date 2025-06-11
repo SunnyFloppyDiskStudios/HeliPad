@@ -15,15 +15,31 @@ struct AppLauncherButton: View {
     @EnvironmentObject var fetcher: AppFetcher
     @State private var isHovering = false
 
+    var isBeingDragged: Bool {
+        fetcher.draggingItemID == app.identifier
+    }
+
+    var isPlaceholder: Bool {
+        fetcher.activeDropTargetID == app.identifier
+    }
+
     var body: some View {
         VStack(spacing: 4) {
-            Image(nsImage: app.icon ?? NSImage())
-                .resizable()
-                .frame(width: 64, height: 64)
-            Text(app.name)
-                .font(.caption)
-                .lineLimit(1)
-                .multilineTextAlignment(.center)
+            if isBeingDragged || isPlaceholder {
+                Color.clear
+                    .frame(width: 64, height: 64)
+            } else {
+                Image(nsImage: app.icon ?? NSImage())
+                    .resizable()
+                    .frame(width: 64, height: 64)
+            }
+
+            if !isBeingDragged && !isPlaceholder {
+                Text(app.name)
+                    .font(.caption)
+                    .lineLimit(1)
+                    .multilineTextAlignment(.center)
+            }
         }
         .frame(width: 80)
         .scaleEffect(isHovering ? 1.15 : 1.0)
@@ -38,6 +54,7 @@ struct AppLauncherButton: View {
         }
         .onDrag({
             draggedItem = app
+            fetcher.draggingItemID = app.identifier
             return NSItemProvider(object: app.identifier as NSString)
         }, preview: {
             Image(nsImage: app.icon ?? NSImage())
@@ -52,4 +69,3 @@ struct AppLauncherButton: View {
         )
     }
 }
-

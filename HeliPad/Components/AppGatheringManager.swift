@@ -16,16 +16,16 @@ import Combine
 import AppKit
 
 struct AppInfo: Identifiable, Equatable {
-    let id = UUID()
+    var id: String { identifier } // This must be stable across launches
     let name: String
     let icon: NSImage?
     let url: URL
 
     var identifier: String {
-        url.path
+        url.path  // or bundle ID if available
     }
 
-    static func == (lhs: AppInfo, rhs: AppInfo) -> Bool {
+    static func ==(lhs: AppInfo, rhs: AppInfo) -> Bool {
         lhs.identifier == rhs.identifier
     }
 }
@@ -33,6 +33,9 @@ struct AppInfo: Identifiable, Equatable {
 class AppFetcher: ObservableObject {
     @Published var apps: [AppInfo] = []
     private let orderKey = "HeliPadAppOrder"
+    
+    @Published var activeDropTargetID: String? = nil
+    @Published var draggingItemID: String? = nil
 
     init() {
         fetchApps()
@@ -94,11 +97,14 @@ class AppFetcher: ObservableObject {
         UserDefaults.standard.set(order, forKey: orderKey)
     }
 
-    func updateOrder(from fromIndex: Int, to toIndex: Int) {
-        var current = apps
-        let moved = current.remove(at: fromIndex)
-        current.insert(moved, at: toIndex)
-        apps = current
-        saveOrder(apps: current)
+    func updateOrder(from: Int, to: Int) {
+        guard from != to else { return }
+
+        var newApps = apps
+        let item = newApps.remove(at: from)
+        newApps.insert(item, at: to)
+
+        self.apps = newApps
+        self.activeDropTargetID = item.identifier
     }
 }
