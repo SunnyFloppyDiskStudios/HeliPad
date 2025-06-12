@@ -14,6 +14,8 @@ struct AppLauncherButton: View {
     @Binding var draggedItem: AppInfo?
     @EnvironmentObject var fetcher: AppFetcher
     @State private var isHovering = false
+    
+    @Namespace private var dragNamespace
 
     var isBeingDragged: Bool {
         fetcher.draggingItemID == app.identifier
@@ -32,6 +34,7 @@ struct AppLauncherButton: View {
                 Image(nsImage: app.icon ?? NSImage())
                     .resizable()
                     .frame(width: 64, height: 64)
+                    .matchedGeometryEffect(id: app.identifier, in: dragNamespace)
             }
 
             if !isBeingDragged && !isPlaceholder {
@@ -60,7 +63,7 @@ struct AppLauncherButton: View {
             Image(nsImage: app.icon ?? NSImage())
                 .resizable()
                 .frame(width: 64, height: 64)
-                .shadow(radius: 4)
+                .matchedGeometryEffect(id: app.identifier, in: dragNamespace)
         })
         .onDrop(of: [.text], delegate:
             AppDropDelegate(item: app,

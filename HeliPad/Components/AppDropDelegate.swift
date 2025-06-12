@@ -15,15 +15,17 @@ struct AppDropDelegate: DropDelegate {
   @Binding var draggedItem: AppInfo?
 
     func dropEntered(info: DropInfo) {
-        guard
-            let dragged = draggedItem,
-            dragged.identifier != item.identifier,
-            let from = fetcher.apps.firstIndex(where: { $0.identifier == dragged.identifier }),
-            let to = fetcher.apps.firstIndex(where: { $0.identifier == item.identifier }),
-            from != to
+        guard let dragged = draggedItem,
+              dragged != item,
+              let from = fetcher.apps.firstIndex(of: dragged),
+              let to = fetcher.apps.firstIndex(of: item),
+              from != to,
+              to != fetcher.lastDropIndex
         else { return }
 
-        withAnimation {
+        fetcher.lastDropIndex = to
+
+        withAnimation(.easeInOut) {
             fetcher.updateOrder(from: from, to: to)
         }
     }

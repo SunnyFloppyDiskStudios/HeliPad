@@ -36,6 +36,8 @@ class AppFetcher: ObservableObject {
     
     @Published var activeDropTargetID: String? = nil
     @Published var draggingItemID: String? = nil
+    
+    var lastDropIndex: Int?
 
     init() {
         fetchApps()
