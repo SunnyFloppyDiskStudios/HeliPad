@@ -10,6 +10,8 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct AppLauncherButton: View {
+    @Environment(\.dismissWindow) var dismissWindow
+    
     let app: AppInfo
     @Binding var draggedItem: AppInfo?
     @EnvironmentObject var fetcher: AppFetcher
@@ -52,7 +54,10 @@ struct AppLauncherButton: View {
             if NSEvent.modifierFlags.contains(.command) {
                 NSWorkspace.shared.activateFileViewerSelecting([app.url])
             } else {
-                NSWorkspace.shared.open(app.url)
+                Task {
+                    NSWorkspace.shared.open(app.url)
+                }
+                dismissWindow(id: "content")
             }
         }
         .onDrag({
