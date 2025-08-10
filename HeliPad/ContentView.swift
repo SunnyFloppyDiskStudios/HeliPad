@@ -59,12 +59,9 @@ struct ContentView: View {
             Spacer()
             
             Button {
-                // refresh
+                hoverSync.toggle()
             } label: {
                 Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
-            }
-            .onHover { hover in
-                hoverSync.toggle()
             }
             .symbolEffect(.rotate, value: hoverSync)
             
